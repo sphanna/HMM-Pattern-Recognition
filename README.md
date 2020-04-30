@@ -28,6 +28,7 @@ To find the next state we multiply the state vector by the transition matrix.  W
 (r,p,s,r,p,s,r,p,s,r,p,s,r,p,s)
 
 In this case the player is simply cycling through rock, paper, then scissors.  We can represent this with the following transition matrix:
+```{r}
 rpsCycle <- matrix(
   c(
     0,1,0,
@@ -35,6 +36,7 @@ rpsCycle <- matrix(
     1,0,0
   ),3,3,byrow=TRUE
 )
+```
 
 Most player will not stick to a single pattern during play.  Perhaps a slightly more expert player will play:
 
@@ -58,6 +60,20 @@ Below is an plot of a simulated set of patterns (top graph) and the correspondin
 
 ![RPS Output](https://github.com/sphanna/HMM-Pattern-Recognition/blob/master/RPS_StateCapture.JPG)
 
-
+Below is the output showing the original pattern Transition matrix, the estimated pattern transition matrix, and the similarity likelyhood.
+```{r}
+> patternTransition
+     [,1] [,2] [,3]
+[1,]  0.4  0.3  0.3
+[2,]  0.1  0.8  0.1
+[3,]  0.1  0.1  0.8
+> estTransitionMatrix
+           [,1]      [,2]       [,3]
+[1,] 0.61111111 0.1666667 0.22222222
+[2,] 0.10416667 0.8541667 0.04166667
+[3,] 0.06060606 0.1212121 0.81818182
+> likelyhood(estTransitionMatrix,patternTransition)
+[1] 0.9074547
+```
 
 
