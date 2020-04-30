@@ -19,7 +19,7 @@ getState <- function(stateVec){
   return(match(1,stateVec))
 }
 
-#convert from state ID to state vector
+#convert from state ID to state vectort
 stateVec <- function(stateID,numStates){
   vec = rep(0,numStates)
   vec[stateID] = 1
@@ -213,7 +213,7 @@ patternTransition<-matrix(
 patternTable <- threeStatePatternTable()
 
 #generate sequence of patterns
-N = 100
+N = 1000
 numObsStates = 3
 patternStart <- c(0,1,0,0)
 patternSeqVec <- getSequence(patternStart, patternTransition, N)
@@ -225,7 +225,7 @@ playsVec <- generateGame(gameStart,patternSeqVec,patternTable)
 plays <- toStateIDs(playsVec)
 plays
 #Estimate the patterns
-radius = 2
+radius = 1
 est <- estimatePatternSequence(plays,patternTable,radius)
 
 data <- data.frame(patterns,plays,est)
