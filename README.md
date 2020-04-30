@@ -12,11 +12,12 @@ We want to predict our opponents next move then play the corresponding counter-m
 (r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r)
 
 we can clearly see they are just repeating the same state.  We should hopefully predict the next play rather easily.  The pattern of repetition can be represented as a transition matrix between the three states as follows:
+
 repitition <- matrix(
-  c(
-    1,0,0,
-    0,1,0,
-    0,0,1
+c(
+  1,0,0,
+  0,1,0,
+  0,0,1
   ),3,3,byrow=TRUE
 )
 
