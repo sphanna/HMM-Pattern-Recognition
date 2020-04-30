@@ -54,7 +54,7 @@ What I do currently is the following.  I break the sequence up into a set of sub
 # Some example output
 Below is an plot of a simulated set of patterns (top graph) and the corresponding sequence of observables (middle graph).  The bottom graph is the estimated pattern based only on the observables.
 
-![RPS Output]https://github.com/sphanna/HMM-Pattern-Recognition/blob/master/RPS_StateCapture.JPG
+![RPS Output](https://github.com/sphanna/HMM-Pattern-Recognition/blob/master/RPS_StateCapture.JPG)
 
 
 
