@@ -13,6 +13,7 @@ We want to predict our opponents next move then play the corresponding counter-m
 
 we can clearly see they are just repeating the same state.  We should hopefully predict the next play rather easily.  The pattern of repetition can be represented as a transition matrix between the three states as follows:
 
+```{r}
 repitition <- matrix(
 c(
   1,0,0,
@@ -20,6 +21,7 @@ c(
   0,0,1
   ),3,3,byrow=TRUE
 )
+```
 
 To find the next state we multiply the state vector by the transition matrix.  Whatever the current state may be the next state will be the same.  Another example output might be:
 
