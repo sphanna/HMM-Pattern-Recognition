@@ -1,5 +1,4 @@
 # libraries 
-library(depmixS4)
 library(ggplot2)
 library(gridExtra)
 library(reshape2)
@@ -110,7 +109,7 @@ generateGame <- function(start, patternSeq, patternTable){
   return(plays)
 }
 
-createPatternTable <- function(){
+twoStatePatternTable <- function(){
   cycle <- matrix(
     c(
       0.05,0.95,
@@ -132,40 +131,76 @@ createPatternTable <- function(){
   return(patternTable)
 }
 
+threeStatePatternTable <- function(){
+  repitition <- matrix(
+    c(
+      1,0,0,
+      0,1,0,
+      0,0,1
+    ),3,3,byrow=TRUE
+  )
+  
+  rpsCycle <- matrix(
+    c(
+      0,1,0,
+      0,0,1,
+      1,0,0
+    ),3,3,byrow=TRUE
+  )
+  
+  prsCycle <- matrix(
+    c(
+      0,0,1,
+      1,0,0,
+      0,1,0
+    ),3,3,byrow=TRUE
+  )
+  
+  patternTable <- list()
+  patternTable[[1]] <- repitition
+  patternTable[[2]] <- rpsCycle
+  patternTable[[3]] <- prsCycle
+  
+  return(patternTable)
+}
+
+
+
 #generate patterns and pattern transition matrix
 patternTransition<-matrix(
   c(
-    0.95,0.05,
-    0.05,0.95
-  ),2,2,byrow=TRUE
+    0.4,0.3,0.3,
+    0.1,0.8,0.1,
+    0.1,0.1,0.8
+  ),3,3,byrow=TRUE
 )
 
-patternTable = createPatternTable()
+patternTable = threeStatePatternTable()
 
 #generate sequence of patterns
 N = 100
-patternStart <- c(0,1)
+numObsStates = 3
+patternStart <- c(0,1,0)
 patternSeqVec <- getSequence(patternStart, patternTransition, N)
 patterns = toStateIDs(patternSeqVec)
 
-
 #play game using pattern sequence
-gameStart <- c(1,0)
+gameStart <- c(1,0,0)
 playsVec <- generateGame(gameStart,patternSeqVec,patternTable)
 plays <- toStateIDs(playsVec)
 
 #Estimate the patterns
-radius = 2
+radius = 1
 est <- estimatePatternSequence(plays,patternTable,radius)
 
 data <- data.frame(patterns,plays,est)
 
 #Compare estimate
-estTransitionMatrix <- constructTransitionMatrix(est,2)
+estTransitionMatrix <- constructTransitionMatrix(est,numObsStates)
 likelyhood(estTransitionMatrix,patternTransition)
 
 #Simulate next states and compare
-lastState = stateVec(plays[length(plays)],2)
+lastState = stateVec(plays[length(plays)],numObsStates)
 nextState(lastState,estTransitionMatrix)
 nextState(lastState,patternTransition)
 
@@ -181,6 +216,4 @@ g2 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = est, fill = est, col 
   geom_bar(stat = "identity", alpha = I(0.7))
 
 grid.arrange(g0, g1, g2, widths = 1, nrow = 3)
-
-
 
