@@ -53,7 +53,7 @@ Let's say we want to estimate the sequence of patterns based on the exammple obs
 
 (r,r,r,r,r,p,s,r,p,s,r,p,p,p,p,p,p,p,p,p)
 
-What I do currently is the following.  I break the sequence up into a set of subsequences of fixed length.  The length is variable but we can assume it is the average length a person would stick to one sequence, say 5 states.  Based on that subsequence and the transitions between each state in the sequence we can create a transition matrix.  We can compare this transition matrix to a list of possible transition patterns and choose the most likely one.  We do this for every observable state.  I use a likelyhood function to compare two transition matrices that is currently quite simple and needs to be improved.
+We can break the sequence up into a set of subsequences of fixed length.  The length is variable but we can assume it is the average length a person would stick to one sequence, say 5 states.  Based on that subsequence and the transitions between each state in the sequence we can create a transition matrix.  We can then compare this transition matrix to a list of possible transition patterns and choose the most likely one.  We do this for every observable state.  I use a likelyhood function to compare two transition matrices that is currently quite simple and needs to be improved.
 
 # Some example output
 Below is an plot of a simulated set of patterns (top graph) and the corresponding sequence of observables (middle graph).  The bottom graph is the estimated pattern based only on the observables.
