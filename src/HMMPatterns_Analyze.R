@@ -6,14 +6,16 @@ library(reshape2)
 source("src/HMMPatterns_Functions.R")
 source("src/HMMPatterns_Tables.R")
 
+#Initial States
 #Data pulled from src/HMMPatterns_Tables.R
 patternTransition <- fourPatternTransitionM
 patternTable <- threeStatePatternTable()
 
-#generate sequence of patterns
 N = 100
 numObsStates = 3
 numPatterns = length(patternTable)
+
+#generate sequence of patterns
 patternStart <- rep(0,numPatterns)
 patternStart[sample(1:numPatterns, 1)] = 1 #random start pattern
 
@@ -39,10 +41,6 @@ patternTransition
 estTransitionMatrix
 likelyhood(estTransitionMatrix,patternTransition)
 
-#Simulate next states and compare
-#lastState = stateVec(plays[length(plays)],numObsStates)
-#nextState(lastState,estTransitionMatrix)
-#nextState(lastState,patternTransition)
 
 #output plot
 g0 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = patterns, fill = patterns, col = patterns)) + 
