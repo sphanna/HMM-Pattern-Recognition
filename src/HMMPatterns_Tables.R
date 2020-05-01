@@ -1,5 +1,15 @@
 #This file contains the functions that build the pattern tables
 
+#generate patterns and pattern transition matrix
+fourPatternTransitionM<-matrix(
+  c(
+    0.8,0.05,0.1,0.05,
+    0.05,0.8,0.05,0.05,
+    0.05,0.05,0.8,0.1,
+    0.1,0.1,0.1,0.7
+  ),4,4,byrow=TRUE
+)
+
 twoStatePatternTable <- function(){
   cycle <- matrix(
     c(
@@ -80,3 +90,4 @@ threeStatePatternTable <- function(){
   
   return(patternTable)
 }
+

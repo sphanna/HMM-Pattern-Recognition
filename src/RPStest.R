@@ -6,38 +6,35 @@ library(reshape2)
 source("src/HMMPatterns_Functions.R")
 source("src/HMMPatterns_Tables.R")
 
-#generate patterns and pattern transition matrix
-patternTransition<-matrix(
-  c(
-    0.8,0.05,0.1,0.05,
-    0.05,0.8,0.05,0.05,
-    0.05,0.05,0.8,0.1,
-    0.1,0.1,0.1,0.7
-  ),4,4,byrow=TRUE
-)
-
+#Data pulled from src/HMMPatterns_Tables.R
+patternTransition <- fourPatternTransitionM
 patternTable <- threeStatePatternTable()
 
 #generate sequence of patterns
-N = 1000
+N = 100
 numObsStates = 3
-patternStart <- c(0,1,0,0)
+numPatterns = length(patternTable)
+patternStart <- rep(0,numPatterns)
+patternStart[sample(1:numPatterns, 1)] = 1 #random start pattern
+
 patternSeqVec <- getSequence(patternStart, patternTransition, N)
 patterns = toStateIDs(patternSeqVec)
 
 #play game using pattern sequence
-gameStart <- c(1,0,0)
+gameStart <- rep(0,numObsStates)
+gameStart[sample(1:numObsStates, 1)] = 1 #random play to start
+
 playsVec <- generateGame(gameStart,patternSeqVec,patternTable)
 plays <- toStateIDs(playsVec)
 
 #Estimate the patterns
-radius = 1
+radius = 1 #length on either side of state to determine pattern
 est <- estimatePatternSequence(plays,patternTable,radius)
 
 data <- data.frame(patterns,plays,est)
 
 #Compare estimate
-estTransitionMatrix <- constructTransitionMatrix(est,length(patternTable))
+estTransitionMatrix <- constructTransitionMatrix(est,numPatterns)
 patternTransition
 estTransitionMatrix
 likelyhood(estTransitionMatrix,patternTransition)
@@ -46,7 +43,6 @@ likelyhood(estTransitionMatrix,patternTransition)
 #lastState = stateVec(plays[length(plays)],numObsStates)
 #nextState(lastState,estTransitionMatrix)
 #nextState(lastState,patternTransition)
-
 
 #output plot
 g0 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = patterns, fill = patterns, col = patterns)) + 
