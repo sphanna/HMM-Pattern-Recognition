@@ -1,7 +1,7 @@
 # HMM-Pattern-Recognition
 
 # Introduction
-The purpose of this project is to use hidden markov models to make predictions based on patterns within a sequence of events.  A pattern is a subsequence of transitions between observable states.  While engaging in a game it is common for humans to change transition patterns routinely during play.  The hidden states become the transition patterns themselves.  If we can make inferences about the set of patterns used by an oppponent in a game, based on a sequence of their plays, then we may be able to predict their current pattern of play, and the chance that they may change to a new pattern.
+The purpose of this project is to use hidden markov models to make predictions based on patterns within a sequence of events.  A pattern is a subsequence of transitions between observable states.  While engaging in a game it is common for players to change transition patterns routinely during play.  The hidden states become the transition patterns themselves.  If we can make inferences about the set of patterns used by an oppponent in a game, based on a sequence of their plays, then we may be able to predict their current pattern of play, and the chance that they may change to a new pattern.
 
 As a beginning point for this project I have started with the three-observable-state game of rock, paper, scissors (r,p,s).  A sequence of plays may look something like this:
 

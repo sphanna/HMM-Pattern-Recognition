@@ -71,16 +71,16 @@ estPatternTransitionsUn <- out[[3]]
 
 data <- data.frame(patterns,plays,estSup,estUn)
 state <- as.numeric(row.names(data))
-g0 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = patterns, fill = patterns, col = patterns)) + 
+g0 <- ggplot(data, aes(x= state, y = patterns, fill = patterns, col = patterns)) + 
   geom_bar(stat = "identity", alpha = I(0.7))
 
-g1 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = plays, fill = plays, col = plays)) + 
+g1 <- ggplot(data, aes(x= state, y = plays, fill = plays, col = plays)) + 
   geom_bar(stat = "identity", alpha = I(0.7))
 
-g2 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = estSup, fill = estSup, col = estSup)) + 
+g2 <- ggplot(data, aes(x= state, y = estSup, fill = estSup, col = estSup)) + 
   geom_bar(stat = "identity", alpha = I(0.7))
 
-g3 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = estUn, fill = estUn, col = estUn)) + 
+g3 <- ggplot(data, aes(x= state, y = estUn, fill = estUn, col = estUn)) + 
   geom_bar(stat = "identity", alpha = I(0.7))
 
 grid.arrange(g0, g1, g2, g3, widths = 1, nrow = 4)
