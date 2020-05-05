@@ -61,13 +61,13 @@ threeStatePatternTable <- function(){
     c(
       0,1,0,
       1,0,0,
-      0,0,1
+      0.333,0.333,0.333
     ),3,3,byrow=TRUE
   )
   
   psCycle <- matrix(
     c(
-      1,0,0,
+      0.333,0.333,0.333,
       0,0,1,
       0,1,0
     ),3,3,byrow=TRUE
@@ -76,7 +76,7 @@ threeStatePatternTable <- function(){
   srCycle <- matrix(
     c(
       0,0,1,
-      0,1,0,
+      0.333,0.333,0.333,
       1,0,0
     ),3,3,byrow=TRUE
   )

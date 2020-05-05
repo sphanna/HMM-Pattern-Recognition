@@ -34,7 +34,6 @@ unsupervisedModel <- function(plays,numPatterns=4,numObsStates=4,radius=2){
 }
 
 supervisedModel <- function(plays,patternTable,radius=2){
-  
   numObsStates <- length(patternTable[[1]][,1])
   print(numObsStates)
   estPatternSeq <- getPatternSequence(plays, radius, numObsStates)
@@ -50,7 +49,6 @@ patternTransition <- fourPatternTransitionM
 patternTable <- threeStatePatternTable()
 
 #simulate plays
-uniqueObs = 3
 playOutput = simulatePlays(100,numObsStates=uniqueObs,patternTable,patternTransition)
 patterns <- playOutput$patterns
 plays <- playOutput$plays
@@ -64,7 +62,7 @@ estPatternsSup <- out[[2]]
 estPatternTransitionsSup <- out[[3]]
 
 #model plays unsupervised
-out <- unsupervisedModel(plays,numPatterns=4,numObsStates=uniqueObs,radius=2)
+out <- unsupervisedModel(plays,numPatterns=4,numObsStates=length(unique(plays)),radius=2)
 estUn <- out[[1]]
 estPatternsUn <- out[[2]]
 estPatternTransitionsUn <- out[[3]]
@@ -85,4 +83,7 @@ g3 <- ggplot(data, aes(x= state, y = estUn, fill = estUn, col = estUn)) +
 
 grid.arrange(g0, g1, g2, g3, widths = 1, nrow = 4)
 
+estPatternTransitionsSup
+estPatternTransitionsUn
 
+estPatternsUn
