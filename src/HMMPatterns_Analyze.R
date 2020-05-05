@@ -6,53 +6,83 @@ library(reshape2)
 source("src/HMMPatterns_Functions.R")
 source("src/HMMPatterns_Tables.R")
 
+simulatePlays <- function(N,numObsStates,patternTable,patternTransition){
+  #generate sequence of patterns
+  patternStart <- rep(0,numPatterns)
+  patternStart[sample(1:numPatterns, 1)] = 1 #random start pattern
+  
+  patternSeqVec <- getSequence(patternStart, patternTransition, N)
+  patterns = toStateIDs(patternSeqVec)
+  
+  #generate observables using pattern sequence
+  gameStart <- rep(0,numObsStates)
+  gameStart[sample(1:numObsStates, 1)] = 1 #random play to start
+  
+  playsVec <- generateObservables(gameStart,patternSeqVec,patternTable)
+  plays <- toStateIDs(playsVec)
+  output <- data.frame(patterns,plays)
+  return(output)
+}
+
+unsupervisedModel <- function(plays,numPatterns=4,numObsStates=4,radius=2){
+  estPatternSeq <- getPatternSequence(plays, radius, numObsStates)
+  patternSet <- getPatternSet(estPatternSeq,numPatterns)
+  est <- unlist(Map({function (m) mostLikelyPattern(m, patternSet)}, estPatternSeq))
+  estTransitionMatrix <- constructTransitionMatrix(est,numPatterns)
+  output <- list(est,patternSet,estTransitionMatrix)
+  return(output)
+}
+
+supervisedModel <- function(plays,patternTable,radius=2){
+  
+  numObsStates <- length(patternTable[[1]][,1])
+  print(numObsStates)
+  estPatternSeq <- getPatternSequence(plays, radius, numObsStates)
+  estPatterns <- unlist(Map(function (x) mostLikelyPattern(x,patternTable), estPatternSeq))
+  estTransitionMatrix <- constructTransitionMatrix(est,numPatterns)
+  output <- list(estPatterns,patternTable,estTransitionMatrix)
+  return(output)
+}
+
 #Initial States
 #Data pulled from src/HMMPatterns_Tables.R
 patternTransition <- fourPatternTransitionM
 patternTable <- threeStatePatternTable()
 
-N = 100
-numObsStates = 3
-numPatterns = length(patternTable)
+#simulate plays
+uniqueObs = 3
+playOutput = simulatePlays(100,numObsStates=uniqueObs,patternTable,patternTransition)
+patterns <- playOutput$patterns
+plays <- playOutput$plays
 
-#generate sequence of patterns
-patternStart <- rep(0,numPatterns)
-patternStart[sample(1:numPatterns, 1)] = 1 #random start pattern
+#plays <- c(1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,2,1,3,2,1,3,2,1,3,2,1,3,2,1,1,1,1,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,3,3,3,3,2,2,2,1,1,1,1)
 
-patternSeqVec <- getSequence(patternStart, patternTransition, N)
-patterns = toStateIDs(patternSeqVec)
+#model plays with supervised pattern table
+out <- supervisedModel(plays,patternTable,radius=2)
+estSup <- out[[1]]
+estPatternsSup <- out[[2]]
+estPatternTransitionsSup <- out[[3]]
 
-#play game using pattern sequence
-gameStart <- rep(0,numObsStates)
-gameStart[sample(1:numObsStates, 1)] = 1 #random play to start
+#model plays unsupervised
+out <- unsupervisedModel(plays,numPatterns=4,numObsStates=uniqueObs,radius=2)
+estUn <- out[[1]]
+estPatternsUn <- out[[2]]
+estPatternTransitionsUn <- out[[3]]
 
-playsVec <- generateGame(gameStart,patternSeqVec,patternTable)
-plays <- toStateIDs(playsVec)
-
-#Estimate the patterns
-radius = 1 #length on either side of state to determine pattern
-est <- estimatePatternSequence(plays,patternTable,radius)
-
-data <- data.frame(patterns,plays,est)
-
-#Compare estimate
-estTransitionMatrix <- constructTransitionMatrix(est,numPatterns)
-patternTransition
-estTransitionMatrix
-likelyhood(estTransitionMatrix,patternTransition)
-
-
-#output plot
+data <- data.frame(patterns,plays,estSup,estUn)
+state <- as.numeric(row.names(data))
 g0 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = patterns, fill = patterns, col = patterns)) + 
   geom_bar(stat = "identity", alpha = I(0.7))
 
 g1 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = plays, fill = plays, col = plays)) + 
   geom_bar(stat = "identity", alpha = I(0.7))
 
-g2 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = est, fill = est, col = est)) + 
+g2 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = estSup, fill = estSup, col = estSup)) + 
   geom_bar(stat = "identity", alpha = I(0.7))
 
-grid.arrange(g0, g1, g2, widths = 1, nrow = 3)
+g3 <- ggplot(data, aes(x= as.numeric(row.names(data)), y = estUn, fill = estUn, col = estUn)) + 
+  geom_bar(stat = "identity", alpha = I(0.7))
 
+grid.arrange(g0, g1, g2, g3, widths = 1, nrow = 4)
 
 
