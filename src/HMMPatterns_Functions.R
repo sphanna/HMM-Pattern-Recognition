@@ -3,6 +3,44 @@
 
 ##MODEL FUNCTIONS##
 
+simulatePlays <- function(N,numObsStates,patternTable,patternTransition){
+  #generate sequence of patterns
+  numPatterns <- length(patternTable)
+  patternStart <- rep(0,numPatterns)
+  patternStart[sample(1:numPatterns, 1)] = 1 #random start pattern
+  
+  patternSeqVec <- generateSequence(patternStart, patternTransition, N)
+  patterns = toStateIDs(patternSeqVec)
+  
+  #generate observables using pattern sequence
+  gameStart <- rep(0,numObsStates)
+  gameStart[sample(1:numObsStates, 1)] = 1 #random play to start
+  
+  playsVec <- generateObservables(gameStart,patternSeqVec,patternTable)
+  plays <- toStateIDs(playsVec)
+  output <- data.frame(patterns,plays)
+  return(output)
+}
+
+unsupervisedModel <- function(plays,numObsStates=4,maxPatterns=4,radius=2){
+  estPatternSeq <- estPatternSequence(plays, radius, numObsStates)
+  patternSet <- getPatternSet(estPatternSeq,maxPatterns)
+  estPatterns <- unlist(Map({function (m) mostLikelyPattern(m, patternSet)}, estPatternSeq))
+  estTransitionMatrix <- constructTransitionMatrix(estPatterns,length(patternSet))
+  output <- list(estPatterns,patternSet,estTransitionMatrix)
+  return(output)
+}
+
+supervisedModel <- function(plays,patternTable,radius=2){
+  numPatterns <- length(patternTable)
+  numObsStates <- length(patternTable[[1]][,1])
+  estPatternSeq <- estPatternSequence(plays, radius, numObsStates)
+  estPatterns <- unlist(Map(function (x) mostLikelyPattern(x,patternTable), estPatternSeq))
+  estTransitionMatrix <- constructTransitionMatrix(estPatterns,numPatterns)
+  output <- list(estPatterns,patternTable,estTransitionMatrix)
+  return(output)
+}
+
 #compare two markov transition matricies of equal size
 likelyhood = function(m1,m2){
   n <- length(m1)
@@ -27,7 +65,7 @@ mostLikelyPattern <- function(transitionM, patternTable){
 #Based on a sequence of observed states give an estimate for the most
 #likely pattern.  We look at the current index +- the radius to build 
 #a subsequence of observables from which we compute the likely pattern.
-getPatternSequence <- function(obsSeq, radius, numObsStates){
+estPatternSequence <- function(obsSeq, radius, numObsStates){
   N <- length(obsSeq)
   patternSeq <- list()
   
@@ -51,6 +89,10 @@ getPatternSequence <- function(obsSeq, radius, numObsStates){
 
 #builds a transition matrix from a sequence of observables
 constructTransitionMatrix <- function(sequence,numStates){
+  if(length(sequence) <= 1){
+    return(uniformMarkov(numStates))
+  }
+  
   numTransitions <- length(sequence)-1
   transitionM <- matrix(0, nrow = numStates, ncol = numStates)
   
@@ -61,10 +103,15 @@ constructTransitionMatrix <- function(sequence,numStates){
     transitionM[i,j] <- transitionM[i,j] + 1
   }
   
+  #TODO:Be smarter about this
+  #if we see no occurance of some state in the pattern
+  #how do we account for a situation where we get that state?
+  #We should transition to a state in the pattern we observed.
   for(i in 1:numStates){
     rowSum = sum(transitionM[i,1:numStates])
     if(rowSum == 0){
-      transitionM[i,i] = 1
+      transitionM[i,1:numStates] = 1
+      transitionM[i,i] = 0
     }
   }
 
@@ -141,6 +188,15 @@ generateObservables <- function(start, patternSeq, patternTable){
   return(plays)
 }
 
+generateSequence <- function(start, transitionM, N){
+  seq <- list()
+  seq[[1]] <- start
+  for(k in 2:N){
+    seq[[k]] <- nextState(seq[[k-1]],transitionM)
+  }
+  return(seq)
+}
+
 ##STATE UTILS##
 
 #convert from state vector to state ID number
@@ -193,3 +249,4 @@ uniformMarkov <- function(size){
   }
   return(transitionM)
 }
+

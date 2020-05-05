@@ -1,14 +1,23 @@
 #This file contains the functions that build the pattern tables
+source("src/HMMPatterns_Functions.R")
 
 #generate patterns and pattern transition matrix
-fourPatternTransitionM<-matrix(
-  c(
-    0.9,0.01,0.02,0.07,
-    0.01,0.9,0.07,0.02,
-    0.01,0.02,0.9,0.07,
-    0.1,0.1,0.1,0.7
-  ),4,4,byrow=TRUE
-)
+
+
+patternTransitionM <- function(){
+  m<-matrix(
+    c(
+      0.9,0.01,0.02,0.07,0.01,0.01,
+      0.01,0.9,0.07,0.02,0.01,0.01,
+      0.01,0.02,0.9,0.07,0.01,0.01,
+      0.1,0.1,0.1,0.7,0.01,0.01,
+      0.01,0.02,0.04,0.07,0.8,0.01,
+      0.01,0.02,0.1,0.07,0.01,0.8
+    ),6,6,byrow=TRUE
+  )
+  
+  return(markovNormalize((m)))
+}
 
 twoStatePatternTable <- function(){
   cycle <- matrix(
@@ -61,13 +70,13 @@ threeStatePatternTable <- function(){
     c(
       0,1,0,
       1,0,0,
-      0.333,0.333,0.333
+      0.5,0.5,0
     ),3,3,byrow=TRUE
   )
   
   psCycle <- matrix(
     c(
-      0.333,0.333,0.333,
+      0,0.5,0.5,
       0,0,1,
       0,1,0
     ),3,3,byrow=TRUE
@@ -76,7 +85,7 @@ threeStatePatternTable <- function(){
   srCycle <- matrix(
     c(
       0,0,1,
-      0.333,0.333,0.333,
+      0.5,0,0.5,
       1,0,0
     ),3,3,byrow=TRUE
   )
@@ -86,7 +95,9 @@ threeStatePatternTable <- function(){
   patternTable[[1]] <- repitition
   patternTable[[2]] <- rpsCycle
   patternTable[[3]] <- prsCycle
-  patternTable[[4]] <- psCycle
+  patternTable[[4]] <- rpCycle
+  patternTable[[5]] <- psCycle
+  patternTable[[6]] <- srCycle
   
   return(patternTable)
 }
