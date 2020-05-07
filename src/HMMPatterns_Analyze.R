@@ -44,8 +44,5 @@ g3 <- ggplot(data, aes(x= state, y = estUn, fill = estUn, col = estUn)) +
 
 grid.arrange(g0, g1, g2, g3, widths = 1, nrow = 4)
 
-estPatternTransitionsSup
-estPatternTransitionsUn
-
-estPatternsUn
+#test
 
