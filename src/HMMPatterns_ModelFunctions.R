@@ -1,5 +1,6 @@
-#This file Contains the fucntions developed for the HMM Project.
 
+#This file Contains the fucntions developed for the HMM Project.
+source("src/HMMPatterns_Util.R")
 
 ##MODEL FUNCTIONS##
 
@@ -22,21 +23,44 @@ simulatePlays <- function(N,numObsStates,patternTable,patternTransition){
   return(output)
 }
 
-unsupervisedModel <- function(plays,numObsStates=4,maxPatterns=4,radius=2){
+#Input:
+#plays: numeric array of observed states.  ex: c(1,2,1,2,1,3,3,3,4,4,3,2,3,1)
+#numObsStates: number of observed states, usually input as the length(unique(plays))
+#maxPatterns: defines how many patterns you would expect to find.  Useful for comparison with a supervised model
+#seqLength: length of the subsequence to search for patterns
+#bias: modifies the pattern transition matrix to make it less likely to get stuck on repeated patterns.
+#
+#Output is a list of three pieces of data:
+#estPatterns: array of the estimated patterns for each state
+#patternSet: a list of estimated patterns no larger than maxPatterns
+#estTransitionMatrix: the estimated pattern transition matrix that defines transitions between patterns in the patternSet
+unsupervisedModel <- function(plays,numObsStates=4,maxPatterns=4,seqLength=4, bias = 0.01){
+  radius = floor(seqLength/2)
   estPatternSeq <- estPatternSequence(plays, radius, numObsStates)
   patternSet <- getPatternSet(estPatternSeq,maxPatterns)
   estPatterns <- unlist(Map({function (m) mostLikelyPattern(m, patternSet)}, estPatternSeq))
-  estTransitionMatrix <- constructTransitionMatrix(estPatterns,length(patternSet))
+  estTransitionMatrix <- constructTransitionMatrix(estPatterns,length(patternSet), bias)
   output <- list(estPatterns,patternSet,estTransitionMatrix)
   return(output)
 }
 
-supervisedModel <- function(plays,patternTable,radius=2){
+#Input:
+#plays: numeric array of observed states.  ex: c(1,2,1,2,1,3,3,3,4,4,3,2,3,1)
+#patternTable: list of matrices which define predetermined expected patterns in the sequence
+#seqLength: length of the subsequence to search for patterns
+#bias: modifies the pattern transition matrix to make it less likely to get stuck on repeated patterns
+#
+#Output is a list of three pieces of data:
+#estPatterns: array of the estimated patterns for each state
+#patternTable: the input pattern Table
+#estTransitionMatrix: the estimated pattern transition matrix that defines transitions between patterns in the table
+supervisedModel <- function(plays,patternTable,seqLength=4, bias = 0.01){
+  radius = floor(seqLength/2)
   numPatterns <- length(patternTable)
   numObsStates <- length(patternTable[[1]][,1])
   estPatternSeq <- estPatternSequence(plays, radius, numObsStates)
   estPatterns <- unlist(Map(function (x) mostLikelyPattern(x,patternTable), estPatternSeq))
-  estTransitionMatrix <- constructTransitionMatrix(estPatterns,numPatterns)
+  estTransitionMatrix <- constructTransitionMatrix(estPatterns,numPatterns,bias)
   output <- list(estPatterns,patternTable,estTransitionMatrix)
   return(output)
 }
@@ -88,13 +112,14 @@ estPatternSequence <- function(obsSeq, radius, numObsStates){
 }
 
 #builds a transition matrix from a sequence of observables
-constructTransitionMatrix <- function(sequence,numStates){
+constructTransitionMatrix <- function(sequence,numStates,bias=0){
   if(length(sequence) <= 1){
     return(uniformMarkov(numStates))
   }
   
   numTransitions <- length(sequence)-1
-  transitionM <- matrix(0, nrow = numStates, ncol = numStates)
+  #the bias is to help ensure we don't get stuck in one state forever
+  transitionM <- matrix(bias, nrow = numStates, ncol = numStates)
   
   #simply count occruances of each transition
   for(k in 1:numTransitions){
@@ -110,15 +135,15 @@ constructTransitionMatrix <- function(sequence,numStates){
   for(i in 1:numStates){
     rowSum = sum(transitionM[i,1:numStates])
     if(rowSum == 0){
-      transitionM[i,1:numStates] = 1
-      transitionM[i,i] = 0
+      transitionM[i,1:numStates] = 1 + bias
+      transitionM[i,i] = bias
     }
   }
-
+  
   return(markovNormalize(transitionM))
 }
 
-getPatternSet <- function(pSeq, maxPatterns = 5, maxIterations = 100){
+getPatternSet <- function(pSeq, maxPatterns = 5, maxIterations = 10){
   numPatterns = maxPatterns + 1
   seq <- pSeq
   comp <- 1
@@ -143,13 +168,13 @@ reducePatternSequence <- function(pSeq, comp=1){
   sumMat <- Reduce(function (x,y) x + y, matchedSet)
   mat <- markovNormalize(sumMat)
   #mat <- comparisonSet[[sample(1:length(matchedSet),1)]]
-
+  
   if(length(result)==0){
     result <- list(mat)
   } else{
     result <- c(result,list(mat))
   }
- 
+  
   notMatched <- pSeq[compare == FALSE]
   
   if(length(notMatched) > 1){
@@ -157,8 +182,24 @@ reducePatternSequence <- function(pSeq, comp=1){
   } else {
     result <- c(result,notMatched)
   }
-
+  
   return(result)
+}
+
+getPredictedStates <- function(N,data,playHistory,numObsStates){
+  estPatternSeq <- data[[1]]
+  estPatterns <- data[[2]]
+  estPatternTransition <- data[[3]]
+  
+  currentPatternVec <- stateVec(tail(estPatternSeq,1),length(estPatterns))
+  predictedPatternSeqVecs <- generateSequence(currentPatternVec, estPatternTransition,N+1)
+  predictedPatterns <- toStateIDs(predictedPatternSeqVecs)
+  
+  lastState <- stateVec(tail(playHistory,1),numObsStates)
+  predictedObsVecs <- generateObservables(lastState, predictedPatternSeqVecs, estPatterns)
+  predictedObs <- toStateIDs(predictedObsVecs)[2:(length(predictedObsVecs))]
+  
+  return(data.frame(predictedObs,predictedPatterns[1:(length(predictedPatterns)-1)]))
 }
 
 ##STATE GENERATION##
@@ -197,56 +238,6 @@ generateSequence <- function(start, transitionM, N){
   return(seq)
 }
 
-##STATE UTILS##
 
-#convert from state vector to state ID number
-getState <- function(stateVec){
-  return(match(1,stateVec))
-}
 
-#convert from state ID to state vector
-stateVec <- function(stateID,numStates){
-  vec <- rep(0,numStates)
-  vec[stateID] <- 1
-  return(vec)
-}
-
-#Convert a list of state vectors to a list of IDs
-toStateIDs <- function(stateList){
-  n <- length(stateList)
-  v <- rep(0,n)
-  for(k in 1:n){
-    v[k] = getState(stateList[[k]])
-  }
-  return(v)
-}
-
-randStateVec <- function(numStates){
-  v <- rep(0,numStates)
-  ind <- sample(1:numStates, 1)
-  v[ind] <- 1
-  return(v)
-}
-
-##TRANSITION MATRIX UTILS##
-
-#normalizes by row
-markovNormalize <- function(transitionM){
-  size <- length(transitionM[,1])
-  for(k in 1:size){
-    rowSum = sum(transitionM[k,1:size])
-    if(rowSum != 0){
-      transitionM[k,1:size] = transitionM[k,1:size] / rowSum
-    }
-  }
-  return(transitionM)
-}
-
-uniformMarkov <- function(size){
-  transitionM <- matrix(0,size,size,byrow=TRUE)
-  for(k in 1:size){
-    transitionM[k,1:size] = 1 / size
-  }
-  return(transitionM)
-}
 

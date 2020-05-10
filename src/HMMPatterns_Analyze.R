@@ -4,6 +4,7 @@ library(gridExtra)
 library(reshape2)
 
 source("src/HMMPatterns_Functions.R")
+source("src/HMMPatterns_Util.R")
 source("src/HMMPatterns_Tables.R")
 
 #Initial States
@@ -17,13 +18,13 @@ patterns <- playOutput$patterns
 plays <- playOutput$plays
 
 #model plays with supervised pattern table
-outSup <- supervisedModel(plays,patternTable,radius=2)
+outSup <- supervisedModel(plays,patternTable,seqLength<-5)
 estSup <- outSup[[1]]
 estPatternsSup <- outSup[[2]]
 estPatternTransitionsSup <- outSup[[3]]
 
 #model plays unsupervised
-outUn <- unsupervisedModel(plays,numObsStates=length(unique(plays)),maxPatterns=6,radius=2)
+outUn <- unsupervisedModel(plays,numObsStates<-length(unique(plays)),maxPatterns<-6,seqLength<-5)
 estUn <- outUn[[1]]
 estPatternsUn <- outUn[[2]]
 estPatternTransitionsUn <- outUn[[3]]
@@ -44,5 +45,4 @@ g3 <- ggplot(data, aes(x= state, y = estUn, fill = estUn, col = estUn)) +
 
 grid.arrange(g0, g1, g2, g3, widths = 1, nrow = 4)
 
-#test
 
