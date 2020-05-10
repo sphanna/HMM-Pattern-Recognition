@@ -1,5 +1,5 @@
 
-#This file Contains the fucntions developed for the HMM Project.
+#This file Contains the functions developed for the HMM Project.
 source("src/HMMPatterns_Util.R")
 
 ##MODEL FUNCTIONS##

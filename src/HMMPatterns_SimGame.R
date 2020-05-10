@@ -1,6 +1,6 @@
 library(rTensor)
 
-source("src/HMMPatterns_Functions.R")
+source("src/HMMPatterns_ModelFunctions.R")
 source("src/HMMPatterns_Tables.R")
 source("src/HMMPatterns_Util.R")
 

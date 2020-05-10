@@ -3,7 +3,7 @@ library(ggplot2)
 library(gridExtra)
 library(reshape2)
 
-source("src/HMMPatterns_Functions.R")
+source("src/HMMPatterns_ModelFunctions.R")
 source("src/HMMPatterns_Util.R")
 source("src/HMMPatterns_Tables.R")
 

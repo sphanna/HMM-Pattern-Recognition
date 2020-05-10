@@ -1,5 +1,5 @@
 #This file contains the functions that build the pattern tables
-source("src/HMMPatterns_Functions.R")
+source("src/HMMPatterns_Util.R")
 
 #generate patterns and pattern transition matrix
 
