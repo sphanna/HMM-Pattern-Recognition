@@ -34,7 +34,7 @@ simulatePlays <- function(N,numObsStates,patternTable,patternTransition){
 #estPatterns: array of the estimated patterns for each state
 #patternSet: a list of estimated patterns no larger than maxPatterns
 #estTransitionMatrix: the estimated pattern transition matrix that defines transitions between patterns in the patternSet
-unsupervisedModel <- function(plays,numObsStates=4,maxPatterns=4,seqLength=4, bias = 0.01){
+unsupervisedModel <- function(plays,numObsStates=4,maxPatterns=4,seqLength=4, bias = 0){
   radius = floor(seqLength/2)
   estPatternSeq <- estPatternSequence(plays, radius, numObsStates)
   patternSet <- getPatternSet(estPatternSeq,maxPatterns)
@@ -54,7 +54,7 @@ unsupervisedModel <- function(plays,numObsStates=4,maxPatterns=4,seqLength=4, bi
 #estPatterns: array of the estimated patterns for each state
 #patternTable: the input pattern Table
 #estTransitionMatrix: the estimated pattern transition matrix that defines transitions between patterns in the table
-supervisedModel <- function(plays,patternTable,seqLength=4, bias = 0.01){
+supervisedModel <- function(plays,patternTable,seqLength=4, bias = 0){
   radius = floor(seqLength/2)
   numPatterns <- length(patternTable)
   numObsStates <- length(patternTable[[1]][,1])
@@ -143,6 +143,8 @@ constructTransitionMatrix <- function(sequence,numStates,bias=0){
   return(markovNormalize(transitionM))
 }
 
+#from a sequence of patterns, pSeq, reduce them down to a smaller set of patterns no
+#larger than maxPatterns or by maxIterations.
 getPatternSet <- function(pSeq, maxPatterns = 5, maxIterations = 10){
   numPatterns = maxPatterns + 1
   seq <- pSeq
