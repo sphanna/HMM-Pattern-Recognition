@@ -36,7 +36,7 @@ estPatternsUn <- outUn[[2]]
 estPatternTransitionsUn <- outUn[[3]]
 ```
 
-The supervised model takes in a pattern table of expected patterns.  We also need to know the sequence length by which to find patterns.  THe unsupervised model is given the number of states and the maximum number patterns to reduce to.  It may reduce the patterns that are found down to 6 or fewer in the example above.  We also need to give it a sequence length.
+The supervised model takes in a pattern table of expected patterns.  We also need to know the sequence length by which to find patterns.  The unsupervised model is given the number of states and the maximum number patterns to reduce to.  It may reduce the patterns that are found down to 6 or fewer in the example above.  We also need to give it a sequence length.
 
 Both models output three pieces of data:
 1) A vector representing the expected patterns at each observation.  These values represent the index of the pattern table where we can find the pattern.
