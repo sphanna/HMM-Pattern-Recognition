@@ -44,7 +44,7 @@ Both models output three pieces of data:
 2) The set of patterns.  If the model is supervised this is just the input pattern table.
 3) The estimated transition matrix between patterns in the pattern table.
 
-The information from these models we could look at the pattern sequence or we could use the pattern table and transition matrix to simulate predicted plays.  
+From the information from these models we could look at the pattern sequence or we could use the pattern table and transition matrix to simulate predicted plays.
 
 I proved a getPredictedStates function that takes in the number of desired predicted states, the model data, the last observed state, and the number of states:
 
