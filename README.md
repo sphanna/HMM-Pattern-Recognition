@@ -1,4 +1,5 @@
 # HMM-Pattern-Recognition
+The purpose of this project is to make accurate predictions of future states based on observed patterns in prior states.  In the models provided a pattern is defined by a transition matrix between observed states.  The model makes use of a markov chain to estimate transition probabilities between these patterns.
 
 The models and related code can be found in HMMPatterns_ModelFunctions.R.  Below are some examples of how we can use both the unsupervised and supervised models.  We will first take a look at the HMMPatterns_Analyze.R file:
 
