@@ -132,13 +132,13 @@ constructTransitionMatrix <- function(sequence,numStates,bias=0){
   #if we see no occurance of some state in the pattern
   #how do we account for a situation where we get that state?
   #We should transition to a state in the pattern we observed.
-  for(i in 1:numStates){
-    rowSum = sum(transitionM[i,1:numStates])
-    if(rowSum == 0){
-      transitionM[i,1:numStates] = 1
-      transitionM[i,i] = 0
-    }
-  }
+  #for(i in 1:numStates){
+  #  rowSum = sum(transitionM[i,1:numStates])
+  #  if(rowSum == 0){
+  #    transitionM[i,1:numStates] = 1
+  #    transitionM[i,i] = 0
+  #  }
+  #}
   
   return(markovNormalize(transitionM))
 }
@@ -211,12 +211,24 @@ nextState <- function(state, transitionM){
   prob <- state %*% transitionM
   n <- length(state)
   ind <- 1:n
-  newstateIndex <- sample(ind, size = 1, replace = TRUE, prob)
+  
+  #if the pattern does not contain information about
+  #how to transition from the current state then
+  #transition into one of the pattern states
+  if(sum(prob) == 0){
+    for(k in 1:n){
+      if(sum(transitionM[k,]) > 0){
+        prob[k] <- 1
+      }
+    }
+    prob <- (prob / sum(prob)) %*% transitionM
+  }
+  
+  newstateIndex <- sample(ind, size = 1, replace = FALSE, prob)
   newstate <- rep(0,n)
   newstate[newstateIndex] <- 1
   return(newstate)
 }
-
 
 #uses a patternSequence build a sequence of observable states
 generateObservables <- function(start, patternSeq, patternTable){

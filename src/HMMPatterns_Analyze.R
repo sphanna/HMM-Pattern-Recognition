@@ -13,12 +13,12 @@ patternTransition <- patternTransitionM()
 patternTable <- threeStatePatternTable()
 
 #simulate plays
-playOutput = simulatePlays(100,numObsStates=3,patternTable,patternTransition)
+playOutput = simulatePlays(200,numObsStates=3,patternTable,patternTransition)
 patterns <- playOutput$patterns
 plays <- playOutput$plays
 
 #model plays with supervised pattern table
-outSup <- supervisedModel(plays,patternTable,seqLength<-2)
+outSup <- supervisedModel(plays,patternTable,seqLength<-4)
 estSup <- outSup[[1]]
 estPatternsSup <- outSup[[2]]
 estPatternTransitionsSup <- outSup[[3]]
