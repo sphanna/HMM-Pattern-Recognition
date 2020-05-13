@@ -135,8 +135,8 @@ constructTransitionMatrix <- function(sequence,numStates,bias=0){
   for(i in 1:numStates){
     rowSum = sum(transitionM[i,1:numStates])
     if(rowSum == 0){
-      transitionM[i,1:numStates] = 1 + bias
-      transitionM[i,i] = bias
+      transitionM[i,1:numStates] = 1
+      transitionM[i,i] = 0
     }
   }
   
@@ -188,7 +188,7 @@ reducePatternSequence <- function(pSeq, comp=1){
   return(result)
 }
 
-getPredictedStates <- function(N,data,playHistory,numObsStates){
+getPredictedStates <- function(N,data,lastState,numObsStates){
   estPatternSeq <- data[[1]]
   estPatterns <- data[[2]]
   estPatternTransition <- data[[3]]
@@ -197,7 +197,7 @@ getPredictedStates <- function(N,data,playHistory,numObsStates){
   predictedPatternSeqVecs <- generateSequence(currentPatternVec, estPatternTransition,N+1)
   predictedPatterns <- toStateIDs(predictedPatternSeqVecs)
   
-  lastState <- stateVec(tail(playHistory,1),numObsStates)
+  lastState <- stateVec(lastState,numObsStates)
   predictedObsVecs <- generateObservables(lastState, predictedPatternSeqVecs, estPatterns)
   predictedObs <- toStateIDs(predictedObsVecs)[2:(length(predictedObsVecs))]
   

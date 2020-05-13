@@ -18,16 +18,18 @@ patterns <- playOutput$patterns
 plays <- playOutput$plays
 
 #model plays with supervised pattern table
-outSup <- supervisedModel(plays,patternTable,seqLength<-5)
+outSup <- supervisedModel(plays,patternTable,seqLength<-2)
 estSup <- outSup[[1]]
 estPatternsSup <- outSup[[2]]
 estPatternTransitionsSup <- outSup[[3]]
 
 #model plays unsupervised
 outUn <- unsupervisedModel(plays,numObsStates<-length(unique(plays)),maxPatterns<-6,seqLength<-4)
+outUn
 estUn <- outUn[[1]]
 estPatternsUn <- outUn[[2]]
 estPatternTransitionsUn <- outUn[[3]]
+
 
 data <- data.frame(patterns,plays,estSup,estUn)
 state <- as.numeric(row.names(data))
@@ -45,4 +47,8 @@ g3 <- ggplot(data, aes(x= state, y = estUn, fill = estUn, col = estUn)) +
 
 grid.arrange(g0, g1, g2, g3, widths = 1, nrow = 4)
 
+
+patternTransition
+estPatternTransitionsSup
+likelyhood(patternTransition,estPatternTransitionsSup)
 

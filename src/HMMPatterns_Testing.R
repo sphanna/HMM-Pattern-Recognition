@@ -5,11 +5,11 @@ source("src/HMMPatterns_ModelFunctions.R")
 source("src/HMMPatterns_Util.R")
 source("src/HMMPatterns_Tables.R")
 
-plays <- c(1,2,3,1,2,3,1,2,3,3,3,3,3,3,1,2,3,1,2,3,1,2,3,3,3,3,3,3,3)
+plays <- c(1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3)
 uniqueStates <- unique(plays)
 numStates <- length(uniqueStates)
 playIDs <- getIdVector(plays,uniqueStates)
-modelData <- unsupervisedModel(playIDs,numObsStates<-numStates,maxPatterns<-6,radius<-2)
+modelData <- unsupervisedModel(playIDs,numObsStates<-numStates,maxPatterns<-6,seqLength = 6)
 getPredictedStates(20,modelData,playIDs,numStates)
 print(modelData)
 
