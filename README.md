@@ -55,3 +55,5 @@ predictedStates <- getPredictedStates(300,modelData,lastState,numStates)
 This function outputs two vectors equal in length to the desired number of predicted states.  The first vector is of the predicted patterns and the second vector is the predicted states.
 
 The HMMPatterns_SimGame.R file has two functions.  The run() function takes in input from the console.  This input can be any sequence of characters.  It then runs the unsupervised model on the input and makes predictions about next states.  You can output data from the run() function and run it with the AnalyzeRun() function to get some information about how well the predictions did.
+
+For a description of the models and example output, view the attached pdf: Hanna___722___Final_Project_HMMPatternRecognition.pdf
