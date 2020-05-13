@@ -43,4 +43,14 @@ Both models output three pieces of data:
 2) The set of patterns.  If the model is supervised this is just the input pattern table.
 3) The estimated transition matrix between patterns in the pattern table.
 
-The information from these models we could look at the pattern sequence or we could use the pattern table and transition matrix to simulate predicted plays.
+The information from these models we could look at the pattern sequence or we could use the pattern table and transition matrix to simulate predicted plays.  
+
+I proved a getPredictedStates function that takes in the number of desired predicted states, the model data, the last observed state, and the number of states:
+
+```{r}
+predictedStates <- getPredictedStates(300,modelData,lastState,numStates)
+```
+
+This function outputs two vectors equal in length to the desired number of predicted states.  The first vector is of the predicted patterns and the second vector is the predicted states.
+
+The HMMPatterns_SimGame.R file has two functions.  The run() function takes in input from the console.  This input can be any sequence of characters.  It then runs the unsupervised model on the input and makes predictions about next states.  You can output data from the run() function and run it with the AnalyzeRun() function to get some information about how well the predictions did.
