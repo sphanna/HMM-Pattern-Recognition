@@ -24,7 +24,7 @@ estPatternsSup <- outSup[[2]]
 estPatternTransitionsSup <- outSup[[3]]
 
 #model plays unsupervised
-outUn <- unsupervisedModel(plays,numObsStates<-length(unique(plays)),maxPatterns<-6,seqLength<-4)
+outUn <- unsupervisedModel(plays,numObsStates<-length(unique(plays)),maxPatterns<-15,seqLength<-4)
 outUn
 estUn <- outUn[[1]]
 estPatternsUn <- outUn[[2]]

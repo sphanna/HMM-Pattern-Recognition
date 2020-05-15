@@ -128,7 +128,6 @@ constructTransitionMatrix <- function(sequence,numStates,bias=0){
     transitionM[i,j] <- transitionM[i,j] + 1
   }
   
-  #TODO:Be smarter about this
   #if we see no occurance of some state in the pattern
   #how do we account for a situation where we get that state?
   #We should transition to a state in the pattern we observed.
@@ -252,6 +251,12 @@ generateSequence <- function(start, transitionM, N){
   return(seq)
 }
 
-
+naivePredictor <- function(history){
+  freqs <- table(history) / length(history)
+  states <- as.numeric(names(freqs))
+  prob <- as.vector(freqs)
+  nextState <- sample(states, size = 1, replace = FALSE, prob)
+  return(nextState)
+}
 
 
